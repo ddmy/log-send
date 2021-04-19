@@ -1,0 +1,17 @@
+{
+  "name": "log-send",
+  "version": "0.1.0",
+  "description": "日报收集器",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "ChenDongdong",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "nodemailer": "^6.5.0"
+  }
+}

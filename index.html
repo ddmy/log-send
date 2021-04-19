@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  <title>日报填写系统</title>
+  <link rel="stylesheet" href="./render/css/index.css">
+</head>
+<body>
+  <h1>请填写日报!</h1>
+  <div class="box">
+    <p>
+      今日工作:
+    </p>
+    <p>
+      <textarea id="today"></textarea>
+    </p>
+    <p>
+      明日工作:
+    </p>
+    <p>
+      <textarea id="tomorrow"></textarea>
+    </p>
+    <p>
+      总结(风险):
+    </p>
+    <p>
+      <textarea id="result"></textarea>
+    </p>
+    <div class="options">
+      <button id="submit">提交</button>
+      <button id="setEmail">设置邮箱</button>
+    </div>
+  </div>
+</body>
+<script src="./render/js/index.js"></script>
+</html>
