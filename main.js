@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Tray, Menu, dialog, ipcMain } = require('electron')
+const AutoLaunch = require('auto-launch')
 const path = require('path')
 const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
 
@@ -9,6 +10,9 @@ let appIcon = null
 let neddLogSend = true
 let needCloseBtn = false
 
+const autoLogSend = new AutoLaunch({
+  name: 'logSend'
+})
 
 function createWindow () {
   win = new BrowserWindow({
@@ -33,6 +37,7 @@ function createWindow () {
   ipcMain.on('indexLoad', () => {
     win.webContents.send('checkNeddLogSend')
     win.webContents.send('checkNeddClosBtn')
+    win.webContents.send('checkAutoLaunch')
     ipcMain.on('checkNeddLogSendResult', (event, arg) => {
       neddLogSend = arg
       // 设置任务计划
@@ -42,6 +47,10 @@ function createWindow () {
     ipcMain.on('checkNeddClosBtnResult', (event, arg) => {
       needCloseBtn = arg === 'yes'
       createTray()
+    })
+    ipcMain.on('checkAutoLaunchResult', (event, arg) => {
+      arg === 'yes' && autoLogSend.disable()
+      console.log('移除开机启动')
     })
   })
 }
@@ -122,6 +131,14 @@ function createTray () {
 if (process.platform === 'darwin') {
   app.dock.hide()
 }
+
+autoLogSend.isEnabled().then(function(isEnabled){
+  if(isEnabled){
+    return
+  }
+  console.log('设置开机自动启动!')
+  autoLogSend.enable()
+})
 
 app.whenReady().then(() => {
   createWindow()

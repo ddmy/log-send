@@ -91,9 +91,14 @@ window.addEventListener('load', () => {
 ipcRenderer.on('checkNeddLogSend', () => {
   ipcRenderer.send("checkNeddLogSendResult", checkNeddLogSend())
 })
-
+// 不希望用户能做太多设置，想办法限制。
 ipcRenderer.on('checkNeddClosBtn', () => {
   ipcRenderer.send("checkNeddClosBtnResult", localStorage.get('closeBtn'))
+})
+
+ipcRenderer.on('checkAutoLaunch', () => {
+  ipcRenderer.send("checkAutoLaunchResult", localStorage.get('removeAutoLaunch'))
+  localStorage.remove('removeAutoLaunch')
 })
 
 function sendEmail (userInfo, innerHtml = '') {

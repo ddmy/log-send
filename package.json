@@ -8,11 +8,17 @@
     "build:win": "electron-packager . logSend --platform=win32 --arch=x64 --out logSendWin --electron-version 12.0.4 --overwrite",
     "build:mac": "electron-packager . logSend --platform=darwin --arch=x64 --out logSendMac --electron-version 12.0.4 --overwrite"
   },
-  "keywords": ["log", "log-send", "logSend", "electron"],
+  "keywords": [
+    "log",
+    "log-send",
+    "logSend",
+    "electron"
+  ],
   "author": "ChenDongdong",
   "license": "ISC",
   "devDependencies": {},
   "dependencies": {
+    "auto-launch": "^5.0.5",
     "nodemailer": "^6.5.0"
   }
 }
