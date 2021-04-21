@@ -8,28 +8,11 @@
     "build:win": "electron-packager . logSend --platform=win32 --arch=x64 --out logSendWin --electron-version 12.0.4 --overwrite",
     "build:mac": "electron-packager . logSend --platform=darwin --arch=x64 --out logSendMac --electron-version 12.0.4 --overwrite"
   },
-  "keywords": [],
+  "keywords": ["log", "log-send", "logSend", "electron"],
   "author": "ChenDongdong",
   "license": "ISC",
   "devDependencies": {},
   "dependencies": {
     "nodemailer": "^6.5.0"
-  },
-  "build": {
-    "appId": "com.imaxue.app",
-    "productName": "yangyi",
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true
-    },
-    "electronDownload": {
-      "mirror": "https://npm.taobao.org/mirrors/electron/"
-    }
   }
 }
