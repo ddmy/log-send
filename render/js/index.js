@@ -4,6 +4,26 @@ const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
 const { ipcRenderer } = require('electron')
 const { BrowserWindow } = require('electron').remote
 
+// 检测是否需要弹框收集日志
+function checkNeddLogSend () {
+  let current = new Date().toLocaleDateString()
+  let localCacheDate = null
+  try {
+    localCacheDate = JSON.parse(localStorage.get('date'))
+  } catch (error) {}
+  if (!localCacheDate || localCacheDate.time !== current) {
+    localStorage.set('date', JSON.stringify({
+      time: current,
+      result: 'no'
+    }))
+    return true
+  } else if (localCacheDate.time === current && localCacheDate.result === 'no') {
+    return true
+  } else if (localCacheDate.time === current && localCacheDate.result === 'yes') {
+    return false
+  }
+}
+
 function createEmailWindow () {
     // 启动新的渲染进程，让用户填写邮箱账号，密码
     let win = new BrowserWindow({
@@ -24,7 +44,13 @@ function createEmailWindow () {
       win = null
     })
 }
-document.querySelector('#submit').addEventListener('click', () => {
+
+function isSend () {
+  document.querySelector('body').innerHTML = '<h1>今日日报已提交，感谢配合！</h1>'
+}
+
+const submit = document.querySelector('#submit')
+submit && submit.addEventListener('click', () => {
   let userInfo = null
   try {
     userInfo = JSON.parse(localStorage.get('author'))
@@ -53,7 +79,13 @@ document.querySelector('#submit').addEventListener('click', () => {
   sendEmail(userInfo, innerHtml)
 })
 
-document.querySelector('#setEmail').addEventListener('click', createEmailWindow)
+const setEmail = document.querySelector('#setEmail')
+setEmail && setEmail.addEventListener('click', createEmailWindow)
+
+window.addEventListener('load', () => {
+  document.querySelector('body').style.opacity = '1'
+  !checkNeddLogSend() && isSend()
+})
 
 function sendEmail (userInfo, innerHtml = '') {
   let transporter = nodemailer.createTransport({
@@ -82,6 +114,11 @@ function sendEmail (userInfo, innerHtml = '') {
     if (error) {
       return console.log(error);
     }
+    localStorage.set('date', JSON.stringify({
+      time: new Date().toLocaleDateString(),
+      result: 'yes'
+    }))
+    isSend()
     alert('日报提交成功!')
     // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
   })

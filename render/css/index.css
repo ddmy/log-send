@@ -5,6 +5,7 @@
 body {
   padding: 0 30px;
   box-sizing: border-box;
+  opacity: 0;
 }
 h1 {
   text-align: center;

@@ -1,1 +1,5 @@
 node_modules
+logSend*
+app
+.DS_Store
+dist

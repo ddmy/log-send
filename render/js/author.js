@@ -16,9 +16,11 @@ window.addEventListener('DOMContentLoaded', () => {
     userInfo = JSON.parse(localStorage.get('author'))
   } catch (error) {}
 
-  email.value = userInfo.email
-  pwd.value = userInfo.pwd
-  toEmail.value = userInfo.toEmail
+  if (userInfo) {
+    email.value = userInfo.email
+    pwd.value = userInfo.pwd
+    toEmail.value = userInfo.toEmail
+  }
 
   document.querySelector('button').addEventListener('click', () => {
     const emailVal = email.value || null
