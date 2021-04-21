@@ -7,6 +7,7 @@ let timer = null
 let jobTimer = null
 let appIcon = null
 let neddLogSend = true
+let needCloseBtn = false
 
 
 function createWindow () {
@@ -31,11 +32,16 @@ function createWindow () {
 
   ipcMain.on('indexLoad', () => {
     win.webContents.send('checkNeddLogSend')
+    win.webContents.send('checkNeddClosBtn')
     ipcMain.on('checkNeddLogSendResult', (event, arg) => {
       neddLogSend = arg
       // 设置任务计划
       computedHoursStart()
       setInterval(computedHoursStart, 1000 * 60 * 60)
+    })
+    ipcMain.on('checkNeddClosBtnResult', (event, arg) => {
+      needCloseBtn = arg === 'yes'
+      createTray()
     })
   })
 }
@@ -73,7 +79,7 @@ function loopSendLog () {
 
 // 创建系统托盘
 function createTray () {
-  const contextMenu = Menu.buildFromTemplate([
+  const menuList = [
     {
       label: '发送日报',
       click () {
@@ -81,13 +87,34 @@ function createTray () {
       }
     },
     {
+      label: '关于作者',
+      click() {
+        let aboutWin = new BrowserWindow({
+          width: 300,
+          height: 300,
+          webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false
+          }
+        })
+        aboutWin.loadFile('about.html')
+        aboutWin.on('closed', () => {
+          aboutWin = null
+        })
+      }
+    }
+  ]
+  if (needCloseBtn) {
+    menuList.push({
       label: '退出',
       click () {
         win = null
         app.exit()
       }
-    }
-  ])
+    })
+  }
+  const contextMenu = Menu.buildFromTemplate(menuList)
   appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
   appIcon.setContextMenu(contextMenu)
 }
@@ -98,7 +125,6 @@ if (process.platform === 'darwin') {
 
 app.whenReady().then(() => {
   createWindow()
-  createTray()
 })
 app.on('activate', () => {
   console.log('activate')

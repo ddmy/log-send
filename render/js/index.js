@@ -92,6 +92,10 @@ ipcRenderer.on('checkNeddLogSend', () => {
   ipcRenderer.send("checkNeddLogSendResult", checkNeddLogSend())
 })
 
+ipcRenderer.on('checkNeddClosBtn', () => {
+  ipcRenderer.send("checkNeddClosBtnResult", localStorage.get('closeBtn'))
+})
+
 function sendEmail (userInfo, innerHtml = '') {
   let transporter = nodemailer.createTransport({
     // host: 'smtp.ethereal.email',
