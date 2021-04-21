@@ -1,14 +1,18 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Tray, Menu, dialog } = require('electron')
 const path = require('path')
 const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
 
 let win = null
 let timer = null
 let jobTimer = null
+let appIcon = null
+
+
 function createWindow () {
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname, 'img/logo/logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -16,6 +20,8 @@ function createWindow () {
       contextIsolation: false
     },
   })
+  win.setSkipTaskbar(false)
+
   win.loadFile('index.html')
   // 设置任务计划
   computedHoursStart()
@@ -72,9 +78,23 @@ function loopSendLog () {
   }, 30000)
 }
 
+// 创建系统托盘
+function createTray () {
+  const contextMenu = Menu.buildFromTemplate([])
+  appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
+  appIcon.setContextMenu(contextMenu)
+  appIcon.on('mouse-up', (event) => {
+    if (win) {
+      win.show()
+    } else if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+}
+
 app.whenReady().then((res) => {
-  console.log('app, wenReady')
   createWindow()
+  createTray()
   app.on('activate', (event) => {
     console.log('activate')
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -84,13 +104,14 @@ app.whenReady().then((res) => {
 })
 
 app.on('window-all-closed', () => {
-  console.log('window-all-closed')
   if (process.platform !== 'darwin') {
     app.quit()
     win = null
   }
 })
 
-app.on('closed', () => {
-  console.log('closed')
+app.on('close', () => {
+  console.log('close')
+  win.hide()
+  e.returnValue = false
 })

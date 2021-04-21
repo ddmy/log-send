@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . logSend --platform=win32 --arch=x64 --out logSend --electron-version 12.0.4 --overwrite"
+    "build:win": "electron-packager . logSend --platform=win32 --arch=x64 --out logSendWin --electron-version 12.0.4 --overwrite",
+    "build:mac": "electron-packager . logSend --platform=darwin --arch=x64 --out logSendMac --electron-version 12.0.4 --overwrite"
   },
   "keywords": [],
   "author": "ChenDongdong",
