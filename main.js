@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, dialog } = require('electron')
+const { app, BrowserWindow, Tray, Menu, dialog, ipcMain } = require('electron')
 const path = require('path')
 const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
 
@@ -6,6 +6,7 @@ let win = null
 let timer = null
 let jobTimer = null
 let appIcon = null
+let neddLogSend = true
 
 
 function createWindow () {
@@ -20,32 +21,23 @@ function createWindow () {
       contextIsolation: false
     },
   })
-  win.setSkipTaskbar(false)
-
+  win.setSkipTaskbar(true)
   win.loadFile('index.html')
-  // 设置任务计划
-  computedHoursStart()
-  setInterval(computedHoursStart, 1000 * 60 * 60)
-}
 
-// 检测是否需要弹框收集日志
-function checkNeddLogSend () {
-  let current = new Date().toLocaleDateString()
-  let localCacheDate = null
-  try {
-    localCacheDate = JSON.parse(localStorage.get('date'))
-  } catch (error) {}
-  if (!localCacheDate || localCacheDate.time !== current) {
-    localStorage.set('date', JSON.stringify({
-      time: current,
-      result: 'no'
-    }))
-    return true
-  } else if (localCacheDate.time === current && localCacheDate.result === 'no') {
-    return true
-  } else if (localCacheDate.time === current && localCacheDate.result === 'yes') {
-    return false
-  }
+  win.on('close', event => {
+    event.preventDefault()
+    win.hide()
+  })
+
+  ipcMain.on('indexLoad', () => {
+    win.webContents.send('checkNeddLogSend')
+    ipcMain.on('checkNeddLogSendResult', (event, arg) => {
+      neddLogSend = arg
+      // 设置任务计划
+      computedHoursStart()
+      setInterval(computedHoursStart, 1000 * 60 * 60)
+    })
+  })
 }
 
 // 计算下午六点开始执行循环查找
@@ -60,58 +52,63 @@ function computedHoursStart (hours = 18) {
   if (step < 0) {
     step = 1000 * 60 * 60 * 24 + step
   }
+  console.log('step', step)
   jobTimer = setTimeout(loopSendLog, step)
 }
 
 // 循环让用户填写日志
 function loopSendLog () {
   timer = setInterval(() => {
-    if (checkNeddLogSend && BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-      win.focus()
-    } else {
+    if (neddLogSend && !win.isVisible()) {
+      win.show()
+    } else if (!neddLogSend) {
       clearInterval(timer)
       clearTimeout(jobTimer)
       jobTimer = null
       timer = null
+      console.log('清除定时器')
     }
   }, 30000)
 }
 
 // 创建系统托盘
 function createTray () {
-  const contextMenu = Menu.buildFromTemplate([])
+  const contextMenu = Menu.buildFromTemplate([
+    // {
+    //   label: '发送日报',
+    //   click () {
+    //     win.show()
+    //   }
+    // },
+    // {
+    //   label: '退出',
+    //   click () {
+    //     app.quit()
+    //   }
+    // }
+  ])
   appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
-  appIcon.setContextMenu(contextMenu)
-  appIcon.on('mouse-up', (event) => {
-    if (win) {
-      win.show()
-    } else if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
+  appIcon.on('mouse-up', () => {
+    win.show()
   })
+  appIcon.setContextMenu(contextMenu)
 }
 
-app.whenReady().then((res) => {
+if (process.platform === 'darwin') {
+  app.dock.hide()
+}
+
+app.whenReady().then(() => {
   createWindow()
   createTray()
-  app.on('activate', (event) => {
-    console.log('activate')
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
-  })
 })
-
-app.on('window-all-closed', () => {
+app.on('activate', () => {
+  console.log('activate')
   if (process.platform !== 'darwin') {
-    app.quit()
-    win = null
+    win.show()
+  } else if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow()
   }
 })
 
-app.on('close', () => {
-  console.log('close')
-  win.hide()
-  e.returnValue = false
-})
+app.on('window-all-closed', event => {})

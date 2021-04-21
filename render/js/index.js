@@ -85,6 +85,11 @@ setEmail && setEmail.addEventListener('click', createEmailWindow)
 window.addEventListener('load', () => {
   document.querySelector('body').style.opacity = '1'
   !checkNeddLogSend() && isSend()
+  ipcRenderer.send("indexLoad")
+})
+
+ipcRenderer.on('checkNeddLogSend', () => {
+  ipcRenderer.send("checkNeddLogSendResult", checkNeddLogSend())
 })
 
 function sendEmail (userInfo, innerHtml = '') {
