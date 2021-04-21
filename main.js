@@ -74,23 +74,21 @@ function loopSendLog () {
 // 创建系统托盘
 function createTray () {
   const contextMenu = Menu.buildFromTemplate([
-    // {
-    //   label: '发送日报',
-    //   click () {
-    //     win.show()
-    //   }
-    // },
-    // {
-    //   label: '退出',
-    //   click () {
-    //     app.quit()
-    //   }
-    // }
+    {
+      label: '发送日报',
+      click () {
+        win.show()
+      }
+    },
+    {
+      label: '退出',
+      click () {
+        win = null
+        app.exit()
+      }
+    }
   ])
   appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
-  appIcon.on('mouse-up', () => {
-    win.show()
-  })
   appIcon.setContextMenu(contextMenu)
 }
 
