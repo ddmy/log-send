@@ -1,7 +1,8 @@
-const { app, BrowserWindow, Tray, Menu, dialog, ipcMain } = require('electron')
+const { app, BrowserWindow, Tray, Menu, dialog } = require('electron')
 const AutoLaunch = require('auto-launch')
 const path = require('path')
-const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
+const storage = require(path.join(__dirname, 'render/utils/storage.js'))
+const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 
 let win = null
 let timer = null
@@ -31,28 +32,16 @@ function createWindow () {
 
   win.on('close', event => {
     event.preventDefault()
-    win.hide()
+    win && win.hide()
   })
 
-  ipcMain.on('indexLoad', () => {
-    win.webContents.send('checkNeddLogSend')
-    win.webContents.send('checkNeddClosBtn')
-    win.webContents.send('checkAutoLaunch')
-    ipcMain.on('checkNeddLogSendResult', (event, arg) => {
-      neddLogSend = arg
-      // 设置任务计划
-      computedHoursStart()
-      setInterval(computedHoursStart, 1000 * 60 * 60)
-    })
-    ipcMain.on('checkNeddClosBtnResult', (event, arg) => {
-      needCloseBtn = arg === 'yes'
-      createTray()
-    })
-    ipcMain.on('checkAutoLaunchResult', (event, arg) => {
-      arg === 'yes' && autoLogSend.disable()
-      console.log('移除开机启动')
-    })
-  })
+  neddLogSend = checkNeddLogSend()
+  // 设置任务计划
+  computedHoursStart()
+  setInterval(computedHoursStart, 1000 * 60 * 60)
+
+  needCloseBtn = storage.getItem('closeBtn') === 'yes'
+  createTray()
 }
 
 // 计算下午六点开始执行循环查找
@@ -87,12 +76,26 @@ function loopSendLog () {
 }
 
 // 创建系统托盘
-function createTray () {
+async function createTray () {
+  // 获取当前开机自启状态
+  const isEnabled = await autoLogSend.isEnabled().catch(err => console.log(err))
   const menuList = [
     {
       label: '发送日报',
       click () {
         win.show()
+      }
+    },
+    {
+      label: '开机启动',
+      type: 'checkbox',
+      checked: isEnabled,
+      click () {
+        if (isEnabled) {
+          autoLogSend.disable()
+        } else {
+          autoLogSend.enable()
+        }
       }
     },
     {
@@ -112,33 +115,24 @@ function createTray () {
           aboutWin = null
         })
       }
-    }
-  ]
-  if (needCloseBtn) {
-    menuList.push({
+    },
+    {
       label: '退出',
       click () {
         win = null
         app.exit()
       }
-    })
-  }
+    }
+  ]
+
   const contextMenu = Menu.buildFromTemplate(menuList)
   appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
   appIcon.setContextMenu(contextMenu)
 }
 
 if (process.platform === 'darwin') {
-  app.dock.hide()
+  // app.dock.hide()
 }
-
-autoLogSend.isEnabled().then(function(isEnabled){
-  if(isEnabled){
-    return
-  }
-  console.log('设置开机自动启动!')
-  autoLogSend.enable()
-})
 
 app.whenReady().then(() => {
   createWindow()
@@ -151,5 +145,10 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
+app.on('will-quite', () => {
+  dialog.showMessageBox({
+    title: 'test',
+    message: '要退出了啊!'
+  })
+})
 app.on('window-all-closed', event => {})

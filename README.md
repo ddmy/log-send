@@ -3,7 +3,7 @@
 > 目前仅支持QQ邮箱发送，其他邮箱未测试<br>
 
 ## 技术栈
-`electron@12.0.4 + electron-packager + nodemailer + auto-launch`
+`electron@12.0.4 + electron-packager + nodemailer + auto-launch + electron-localstorage`
 > 其中`electron`和`electron-packager`为全局安装
 
 ## 开发打包

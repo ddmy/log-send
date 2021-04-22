@@ -1,7 +1,7 @@
 const path = require('path')
 const { ipcRenderer } = require('electron')
 const { webContents, BrowserWindow } = require('electron').remote
-const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
+const storage = require(path.join(__dirname, 'render/utils/storage.js'))
 
 function regTestEmail(str) {
   return /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/.test(str)
@@ -11,10 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const email = document.querySelector('#email')
   const pwd = document.querySelector('#pwd')
   const toEmail = document.querySelector('#toEmail')
-  let userInfo = null
-  try {
-    userInfo = JSON.parse(localStorage.get('author'))
-  } catch (error) {}
+  let userInfo = storage.getItem('author') || null
 
   if (userInfo) {
     email.value = userInfo.email
@@ -31,11 +28,11 @@ window.addEventListener('DOMContentLoaded', () => {
       alert('请填写正确的邮箱或密码!')
       return
     }
-    localStorage.set('author', JSON.stringify({
+    storage.setItem('author', {
       email: emailVal,
       pwd: pwdVal,
       toEmail: toEmailVal
-    }))
+    })
     ipcRenderer.send('close')
     webContents.getAllWebContents().forEach(item => {
       console.log('item', item)

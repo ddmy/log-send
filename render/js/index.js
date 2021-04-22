@@ -1,48 +1,29 @@
 const path = require('path')
 const nodemailer = require('nodemailer')
-const { localStorage } = require(path.join(__dirname, 'render/utils/utils.js'))
 const { ipcRenderer } = require('electron')
 const { BrowserWindow } = require('electron').remote
+const storage = require(path.join(__dirname, 'render/utils/storage.js'))
+const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 
-// 检测是否需要弹框收集日志
-function checkNeddLogSend () {
-  let current = new Date().toLocaleDateString()
-  let localCacheDate = null
-  try {
-    localCacheDate = JSON.parse(localStorage.get('date'))
-  } catch (error) {}
-  if (!localCacheDate || localCacheDate.time !== current) {
-    localStorage.set('date', JSON.stringify({
-      time: current,
-      result: 'no'
-    }))
-    return true
-  } else if (localCacheDate.time === current && localCacheDate.result === 'no') {
-    return true
-  } else if (localCacheDate.time === current && localCacheDate.result === 'yes') {
-    return false
-  }
-}
+let win = null
 
 function createEmailWindow () {
-    // 启动新的渲染进程，让用户填写邮箱账号，密码
-    let win = new BrowserWindow({
-      width: 300,
-      height: 300,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-        enableRemoteModule: true
-      },
-    })
-    win.loadFile('author.html')
-    win.on('closed', () => {
-      win = null
-    })
-    ipcRenderer.on('close', (event, arg) => {
-      win.close()
-      win = null
-    })
+  if (win) return
+  // 启动新的渲染进程，让用户填写邮箱账号，密码
+  win = new BrowserWindow({
+    width: 300,
+    height: 300,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true
+    },
+  })
+  win.loadFile('author.html')
+  ipcRenderer.on('close', (event, arg) => {
+    win.close()
+    win = null
+  })
 }
 
 function isSend () {
@@ -51,10 +32,7 @@ function isSend () {
 
 const submit = document.querySelector('#submit')
 submit && submit.addEventListener('click', () => {
-  let userInfo = null
-  try {
-    userInfo = JSON.parse(localStorage.get('author'))
-  } catch (error) {}
+  let userInfo = storage.getItem('author') || null
   if (!userInfo) {
     createEmailWindow()
     return
@@ -85,20 +63,6 @@ setEmail && setEmail.addEventListener('click', createEmailWindow)
 window.addEventListener('load', () => {
   document.querySelector('body').style.opacity = '1'
   !checkNeddLogSend() && isSend()
-  ipcRenderer.send("indexLoad")
-})
-
-ipcRenderer.on('checkNeddLogSend', () => {
-  ipcRenderer.send("checkNeddLogSendResult", checkNeddLogSend())
-})
-// 不希望用户能做太多设置，想办法限制。
-ipcRenderer.on('checkNeddClosBtn', () => {
-  ipcRenderer.send("checkNeddClosBtnResult", localStorage.get('closeBtn'))
-})
-
-ipcRenderer.on('checkAutoLaunch', () => {
-  ipcRenderer.send("checkAutoLaunchResult", localStorage.get('removeAutoLaunch'))
-  localStorage.remove('removeAutoLaunch')
 })
 
 function sendEmail (userInfo, innerHtml = '') {

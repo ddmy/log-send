@@ -3,3 +3,4 @@ logSend*
 app
 .DS_Store
 dist
+package-lock.json
