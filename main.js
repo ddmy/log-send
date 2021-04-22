@@ -3,18 +3,21 @@ const AutoLaunch = require('auto-launch')
 const path = require('path')
 const storage = require('electron-localstorage')
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
+const { computedHoursStart } = require(path.join(__dirname, 'utils/utils.js'))
+const reloadApp = require(path.join(__dirname, 'main/job/reload.js'))
 
 let win = null
 let timer = null
 let jobTimer = null
 let appIcon = null
 let neddLogSend = true
-let needCloseBtn = false
 let aboutWin = null
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
 })
+
+reloadApp(app)
 
 function createWindow () {
   win = new BrowserWindow({
@@ -35,30 +38,6 @@ function createWindow () {
     event.preventDefault()
     win && win.hide()
   })
-
-  neddLogSend = checkNeddLogSend()
-  // 设置任务计划
-  computedHoursStart()
-  setInterval(computedHoursStart, 1000 * 60 * 60)
-
-  needCloseBtn = storage.getItem('closeBtn') === 'yes'
-  createTray()
-}
-
-// 计算下午六点开始执行循环查找
-function computedHoursStart (hours = 18) {
-  if (jobTimer) return
-  let date = new Date()
-  let dateIntegralPoint = new Date()
-  dateIntegralPoint.setHours(hours)
-  dateIntegralPoint.setMinutes(0)
-  dateIntegralPoint.setSeconds(0)
-  let step = dateIntegralPoint - date
-  if (step < 0) {
-    step = 1000 * 60 * 60 * 24 + step
-  }
-  console.log('step', step)
-  jobTimer = setTimeout(loopSendLog, step)
 }
 
 // 循环让用户填写日志
@@ -141,6 +120,12 @@ if (process.platform === 'darwin') {
 
 app.whenReady().then(() => {
   createWindow()
+  // 检查今日是否已经发送日报
+  neddLogSend = checkNeddLogSend()
+  // 设置任务计划 下午六点开始执行循环提醒用户发日志
+  jobTimer = computedHoursStart({ hours: 18 }, loopSendLog)
+  // setInterval(computedHoursStart, 1000 * 60 * 60)
+  createTray()
 })
 app.on('activate', () => {
   console.log('activate')
