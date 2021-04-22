@@ -1,5 +1,4 @@
-const path = require('path')
-const storage = require(path.join(__dirname, '../utils/storage.js'))
+const storage = require('electron-localstorage')
 
 // 检查是否需要弹框收集日志
 module.exports =  function checkNeddLogSend () {

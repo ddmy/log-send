@@ -2,13 +2,16 @@ const path = require('path')
 const nodemailer = require('nodemailer')
 const { ipcRenderer } = require('electron')
 const { BrowserWindow } = require('electron').remote
-const storage = require(path.join(__dirname, 'render/utils/storage.js'))
+const storage = require('electron-localstorage')
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 
 let win = null
 
 function createEmailWindow () {
-  if (win) return
+  if (win) {
+    win.show()
+    return
+  }
   // 启动新的渲染进程，让用户填写邮箱账号，密码
   win = new BrowserWindow({
     width: 300,
@@ -22,6 +25,8 @@ function createEmailWindow () {
   win.loadFile('author.html')
   ipcRenderer.on('close', (event, arg) => {
     win.close()
+  })
+  win.on('closed', () => {
     win = null
   })
 }
@@ -90,7 +95,8 @@ function sendEmail (userInfo, innerHtml = '') {
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      return console.log(error);
+      alert(`${error}`)
+      return
     }
     localStorage.set('date', JSON.stringify({
       time: new Date().toLocaleDateString(),

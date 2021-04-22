@@ -1,7 +1,7 @@
 const { app, BrowserWindow, Tray, Menu, dialog } = require('electron')
 const AutoLaunch = require('auto-launch')
 const path = require('path')
-const storage = require(path.join(__dirname, 'render/utils/storage.js'))
+const storage = require('electron-localstorage')
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 
 let win = null
@@ -10,6 +10,7 @@ let jobTimer = null
 let appIcon = null
 let neddLogSend = true
 let needCloseBtn = false
+let aboutWin = null
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
@@ -70,7 +71,6 @@ function loopSendLog () {
       clearTimeout(jobTimer)
       jobTimer = null
       timer = null
-      console.log('清除定时器')
     }
   }, 30000)
 }
@@ -101,7 +101,11 @@ async function createTray () {
     {
       label: '关于作者',
       click() {
-        let aboutWin = new BrowserWindow({
+        if (aboutWin) {
+          aboutWin.show()
+          return
+        }
+        aboutWin = new BrowserWindow({
           width: 300,
           height: 300,
           webPreferences: {
@@ -110,6 +114,7 @@ async function createTray () {
             contextIsolation: false
           }
         })
+        console.log('')
         aboutWin.loadFile('about.html')
         aboutWin.on('closed', () => {
           aboutWin = null
