@@ -14,7 +14,7 @@ function createEmailWindow () {
   }
   // 启动新的渲染进程，让用户填写邮箱账号，密码
   win = new BrowserWindow({
-    width: 300,
+    width: 400,
     height: 300,
     webPreferences: {
       nodeIntegration: true,
