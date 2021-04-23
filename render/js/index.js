@@ -50,10 +50,11 @@ submit && submit.addEventListener('click', () => {
     createEmailWindow()
     return
   }
+  let name = document.querySelector('#name').value
   let today = document.querySelector('#today').value.replace(/\n/g,"<br>")
   let tomorrow = document.querySelector('#tomorrow').value.replace(/\n/g,"<br>")
   let result = document.querySelector('#result').value.replace(/\n/g,"<br>")
-  if (!today || !tomorrow || !result) {
+  if (!today || !tomorrow || !result || !name) {
     return alert('不能为空!')
   }
   const innerHtml = `
@@ -91,11 +92,13 @@ function sendEmail (userInfo, innerHtml = '') {
       pass: userInfo.pwd,
     }
   });
-  
+
+  let name = document.querySelector('#name').value
+
   let mailOptions = {
     from: userInfo.email, // sender address
     to: userInfo.toEmail, // list of receivers
-    subject: new Date().toLocaleDateString() + ' 日报', // Subject line
+    subject: name + '-' + new Date().toLocaleDateString() + ' 日报', // Subject line
     html: innerHtml // html body
   };
 

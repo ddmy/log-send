@@ -23,7 +23,7 @@ reloadApp(app)
 function createWindow () {
   win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 650,
     icon: path.join(__dirname, 'img/logo/logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
