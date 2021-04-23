@@ -6,6 +6,7 @@ const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js')
 const { computedHoursStart } = require(path.join(__dirname, 'utils/utils.js'))
 const reloadApp = require(path.join(__dirname, 'main/job/reload.js'))
 
+const isSupporteNotification = Notification.isSupported()
 let win = null
 let timer = null
 let jobTimer = null
@@ -58,7 +59,11 @@ function createSendLogNotification () {
 function loopSendLog () {
   timer = setInterval(() => {
     if (neddLogSend && !win.isVisible()) {
-      notifi.show()
+      if (isSupporteNotification) {
+        notifi.show()
+      } else {
+        win.show()
+      }
     } else if (!neddLogSend) {
       clearInterval(timer)
       clearTimeout(jobTimer)
