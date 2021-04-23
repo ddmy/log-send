@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, dialog } = require('electron')
+const { app, BrowserWindow, Tray, Menu, dialog, Notification } = require('electron')
 const AutoLaunch = require('auto-launch')
 const path = require('path')
 const storage = require('electron-localstorage')
@@ -12,6 +12,7 @@ let jobTimer = null
 let appIcon = null
 let neddLogSend = true
 let aboutWin = null
+let notifi = null
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
@@ -40,11 +41,24 @@ function createWindow () {
   })
 }
 
+function createSendLogNotification () {
+  notifi = new Notification({
+    title: '填写日报时间到了',
+    subtitle: '每日任务',
+    body: '请准时提交日报, 配合好管理的工作，谢谢同学!',
+    silent: true,
+    timeoutType: 'never'
+  })
+  notifi.on('click', () => {
+    win && win.show()
+  })
+}
+
 // 循环让用户填写日志
 function loopSendLog () {
   timer = setInterval(() => {
     if (neddLogSend && !win.isVisible()) {
-      win.show()
+      notifi.show()
     } else if (!neddLogSend) {
       clearInterval(timer)
       clearTimeout(jobTimer)
@@ -120,6 +134,7 @@ if (process.platform === 'darwin') {
 
 app.whenReady().then(() => {
   createWindow()
+  createSendLogNotification()
   // 检查今日是否已经发送日报
   neddLogSend = checkNeddLogSend()
   // 设置任务计划 下午六点开始执行循环提醒用户发日志
