@@ -5,6 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build": "npm run remove:pack && npm run build:win && npm run build:mac",
+    "remove:pack": "rm -rf logSend*",
     "build:win": "electron-packager . logSend --platform=win32 --arch=x64 --out logSendWin --electron-version 12.0.4 --overwrite  --ignore=logSendWin*",
     "build:mac": "electron-packager . logSend --platform=darwin --arch=x64 --out logSendMac --electron-version 12.0.4 --overwrite --ignore=logSendWin*"
   },
