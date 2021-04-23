@@ -32,7 +32,15 @@ function createEmailWindow () {
 }
 
 function isSend () {
-  document.querySelector('body').innerHTML = '<h1>今日日报已提交，感谢配合！</h1>'
+  document.querySelector('body').innerHTML = `
+    <h1>今日日报已提交，感谢配合！</h1>
+    <button style="display:block; margin: 20px auto">再次提交</button>
+  `
+  setTimeout(() => {
+    document.querySelector('button').addEventListener('click', () => {
+      location.reload()
+    })
+  }, 0)
 }
 
 const submit = document.querySelector('#submit')
@@ -71,6 +79,7 @@ window.addEventListener('load', () => {
 })
 
 function sendEmail (userInfo, innerHtml = '') {
+  document.querySelector('.loading').style.display = 'flex'
   let transporter = nodemailer.createTransport({
     // host: 'smtp.ethereal.email',
     service: 'QQ', // 使用了内置传输发送邮件 查看支持列表：https://nodemailer.com/smtp/well-known/
@@ -87,21 +96,21 @@ function sendEmail (userInfo, innerHtml = '') {
     from: userInfo.email, // sender address
     to: userInfo.toEmail, // list of receivers
     subject: new Date().toLocaleDateString() + ' 日报', // Subject line
-    // 发送text或者html格式
-    // text: 'Hello world?', // plain text body
     html: innerHtml // html body
   };
-  
+
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
+    document.querySelector('.loading').style.display = 'none'
     if (error) {
       alert(`${error}`)
       return
     }
-    localStorage.set('date', JSON.stringify({
+    const setResult = storage.setItem('date', JSON.stringify({
       time: new Date().toLocaleDateString(),
       result: 'yes'
     }))
+    console.log('setResult', setResult)
     isSend()
     alert('日报提交成功!')
     // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>

@@ -26,3 +26,16 @@ textarea {
   width: 200px;
   margin: 0 10px;
 }
+
+.loading {
+  width: 100vw;
+  height: 100vh;
+  background-color: #fdfdfd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+}

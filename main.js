@@ -125,11 +125,21 @@ async function createTray () {
 
   const contextMenu = Menu.buildFromTemplate(menuList)
   appIcon = new Tray(path.join(__dirname, 'img/logo/logo-16.png'))
-  appIcon.setContextMenu(contextMenu)
+  
+  appIcon.on('click', () => {
+    if (win.isFocused()) {
+      win.hide()
+    } else {
+      win.show()
+    }
+  })
+  appIcon.on('right-click', () => {
+    appIcon.popUpContextMenu(contextMenu)
+  })
 }
 
 if (process.platform === 'darwin') {
-  app.dock.hide()
+  // app.dock.hide()
 }
 
 app.whenReady().then(() => {
