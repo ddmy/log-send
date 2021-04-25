@@ -1,6 +1,6 @@
 # 日报发送器
-> 默认每天6点会自动弹框，要求用户发送日报<br>
-> 目前仅支持QQ邮箱发送，其他邮箱未测试<br>
+> 默认每个工作日18点会自发出通知，要求用户发送日报<br>
+> 目前仅支持QQ邮箱发送<br>
 
 ## 技术栈
 `electron@12.0.4 + electron-packager + nodemailer + auto-launch + electron-localstorage`
