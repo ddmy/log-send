@@ -24,7 +24,7 @@ reloadApp(app)
 function createWindow () {
   win = new BrowserWindow({
     width: 800,
-    height: 650,
+    height: 670,
     icon: path.join(__dirname, 'img/logo/logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -147,11 +147,11 @@ if (process.platform === 'darwin') {
   app.dock.hide()
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow()
   createSendLogNotification()
   // 检查今日是否已经发送日报
-  neddLogSend = checkNeddLogSend()
+  neddLogSend = await checkNeddLogSend()
   // 设置任务计划 下午六点开始执行循环提醒用户发日志
   jobTimer = computedHoursStart({ hours: 18 }, loopSendLog)
   // setInterval(computedHoursStart, 1000 * 60 * 60)

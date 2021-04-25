@@ -74,9 +74,9 @@ submit && submit.addEventListener('click', () => {
 const setEmail = document.querySelector('#setEmail')
 setEmail && setEmail.addEventListener('click', createEmailWindow)
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   document.querySelector('body').style.opacity = '1'
-  !checkNeddLogSend() && isSend()
+  !await checkNeddLogSend() && isSend()
 })
 
 function sendEmail (userInfo, innerHtml = '') {
