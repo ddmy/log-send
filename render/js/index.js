@@ -59,6 +59,7 @@ submit && submit.addEventListener('click', () => {
   }
   const innerHtml = `
     <p>
+      <b><font style="color: red;">${name}</font></b><br>
       <b>今日工作:</b><br>${today}
     </p>
     <p>
