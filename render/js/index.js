@@ -41,7 +41,14 @@ submit && submit.addEventListener('click', () => {
       <b>总结(风险):</b><br>${result}
     </p>
   `
-  sendEmail(userInfo, innerHtml)
+  const originData = {
+    name,
+    date: new Date().toLocaleDateString(),
+    today,
+    tomorrow,
+    result
+  }
+  sendEmail(userInfo, innerHtml, originData)
 })
 
 window.addEventListener('load', async () => {
@@ -49,7 +56,7 @@ window.addEventListener('load', async () => {
   !await checkNeddLogSend() && isSend()
 })
 
-function sendEmail (userInfo, innerHtml = '') {
+function sendEmail (userInfo, innerHtml = '', originData) {
   document.querySelector('.loading').style.display = 'flex'
   let transporter = nodemailer.createTransport({
     // host: 'smtp.ethereal.email',
@@ -79,13 +86,19 @@ function sendEmail (userInfo, innerHtml = '') {
       alert(`${error}`)
       return
     }
-    const setResult = storage.setItem('date', JSON.stringify({
+    storage.setItem('date', JSON.stringify({
       time: new Date().toLocaleDateString(),
       result: 'yes'
     }))
-    console.log('setResult', setResult)
+    saveLogHistory(originData)
     isSend()
     alert('日报提交成功!')
     // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
   })
+}
+
+function saveLogHistory (data) {
+  const historyData = storage.getItem('logHistory') || []
+  historyData.unshift(data)
+  storage.setItem('logHistory', historyData)
 }

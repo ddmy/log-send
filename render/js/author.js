@@ -1,6 +1,3 @@
-const path = require('path')
-const { ipcRenderer } = require('electron')
-const { webContents, BrowserWindow } = require('electron').remote
 const storage = require('electron-localstorage')
 
 function regTestEmail(str) {

@@ -15,6 +15,7 @@ let neddLogSend = true
 let aboutWin = null
 let notifi = null
 let setWin = null
+let historyWin = null
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
@@ -83,6 +84,28 @@ async function createTray () {
       label: '发送日报',
       click () {
         win.show()
+      }
+    },
+    {
+      label: '本地日报历史',
+      click () {
+        if (historyWin) {
+          historyWin.show()
+          return
+        }
+        historyWin = new BrowserWindow({
+          width: 420,
+          height: 320,
+          webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false
+          }
+        })
+        historyWin.loadFile('history.html')
+        historyWin.on('closed', () => {
+          historyWin = null
+        })    
       }
     },
     {
@@ -166,7 +189,7 @@ async function createTray () {
 }
 
 if (process.platform === 'darwin') {
-  app.dock.hide()
+  // app.dock.hide()
 }
 
 app.whenReady().then(async () => {

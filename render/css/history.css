@@ -1,0 +1,17 @@
+* {
+  margin: 0 auto;
+}
+.main .every {
+  margin-bottom: 10px;
+  background-color: #eee; 
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+.main .every .time {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.every-item .title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
