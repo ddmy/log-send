@@ -14,6 +14,7 @@ let appIcon = null
 let neddLogSend = true
 let aboutWin = null
 let notifi = null
+let setWin = null
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
@@ -97,6 +98,28 @@ async function createTray () {
       }
     },
     {
+      label: '日报发送配置',
+      click () {
+        if (setWin) {
+          setWin.show()
+          return
+        }
+        setWin = new BrowserWindow({
+          width: 420,
+          height: 320,
+          webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true
+          }
+        })
+        setWin.loadFile('author.html')
+        setWin.on('closed', () => {
+          setWin = null
+        })
+      }
+    },
+    {
       label: '关于作者',
       click() {
         if (aboutWin) {
@@ -112,7 +135,6 @@ async function createTray () {
             contextIsolation: false
           }
         })
-        console.log('')
         aboutWin.loadFile('about.html')
         aboutWin.on('closed', () => {
           aboutWin = null

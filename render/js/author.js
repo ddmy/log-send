@@ -33,13 +33,7 @@ window.addEventListener('DOMContentLoaded', () => {
       pwd: pwdVal,
       toEmail: toEmailVal
     }))
-    console.log('读取', storage.getItem('author'))
-
-    ipcRenderer.send('close')
-    webContents.getAllWebContents().forEach(item => {
-      if(BrowserWindow.fromId(item.id) && BrowserWindow.fromId(item.id).webContents){
-          BrowserWindow.fromId(item.id).webContents.send('close')
-      }
-    })
+    window.opener = null
+    window.close()
   })
 })

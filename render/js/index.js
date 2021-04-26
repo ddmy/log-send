@@ -1,35 +1,7 @@
 const path = require('path')
 const nodemailer = require('nodemailer')
-const { ipcRenderer } = require('electron')
-const { BrowserWindow } = require('electron').remote
 const storage = require('electron-localstorage')
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
-
-let win = null
-
-function createEmailWindow () {
-  if (win) {
-    win.show()
-    return
-  }
-  // 启动新的渲染进程，让用户填写邮箱账号，密码
-  win = new BrowserWindow({
-    width: 400,
-    height: 300,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true
-    },
-  })
-  win.loadFile('author.html')
-  ipcRenderer.on('close', (event, arg) => {
-    win.close()
-  })
-  win.on('closed', () => {
-    win = null
-  })
-}
 
 function isSend () {
   document.querySelector('body').innerHTML = `
@@ -47,7 +19,7 @@ const submit = document.querySelector('#submit')
 submit && submit.addEventListener('click', () => {
   let userInfo = storage.getItem('author') || null
   if (!userInfo) {
-    createEmailWindow()
+    alert('日报发送信息配置不完整，请配置后再发送!')
     return
   }
   let name = document.querySelector('#name').value
@@ -71,9 +43,6 @@ submit && submit.addEventListener('click', () => {
   `
   sendEmail(userInfo, innerHtml)
 })
-
-const setEmail = document.querySelector('#setEmail')
-setEmail && setEmail.addEventListener('click', createEmailWindow)
 
 window.addEventListener('load', async () => {
   document.querySelector('body').style.opacity = '1'
