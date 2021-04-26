@@ -189,7 +189,7 @@ async function createTray () {
 }
 
 if (process.platform === 'darwin') {
-  // app.dock.hide()
+  app.dock.hide()
 }
 
 app.whenReady().then(async () => {
