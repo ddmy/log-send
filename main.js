@@ -4,7 +4,6 @@ const path = require('path')
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 const { computedHoursStart } = require(path.join(__dirname, 'utils/utils.js'))
 const reloadApp = require(path.join(__dirname, 'main/job/reload.js'))
-const storage = require(path.join(__dirname, 'utils/storage.js'))
 
 const isSupporteNotification = Notification.isSupported()
 let win = null
@@ -16,8 +15,6 @@ let aboutWin = null
 let notifi = null
 let setWin = null
 let historyWin = null
-
-storage.setItem('isPackaged', app.isPackaged)
 
 const autoLogSend = new AutoLaunch({
   name: 'logSend'
