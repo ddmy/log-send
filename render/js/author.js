@@ -1,4 +1,5 @@
-const storage = require('electron-localstorage')
+const path = require('path')
+const storage = require(path.join(__dirname, 'utils/storage.js'))
 
 function regTestEmail(str) {
   return /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/.test(str)

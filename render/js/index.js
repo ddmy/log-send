@@ -1,6 +1,6 @@
 const path = require('path')
 const nodemailer = require('nodemailer')
-const storage = require('electron-localstorage')
+const storage = require(path.join(__dirname, 'utils/storage.js'))
 const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
 
 function isSend () {
@@ -86,10 +86,10 @@ function sendEmail (userInfo, innerHtml = '', originData) {
       alert(`${error}`)
       return
     }
-    storage.setItem('date', JSON.stringify({
+    storage.setItem('date', {
       time: new Date().toLocaleDateString(),
       result: 'yes'
-    }))
+    })
     saveLogHistory(originData)
     isSend()
     alert('日报提交成功!')
@@ -102,3 +102,8 @@ function saveLogHistory (data) {
   historyData.unshift(data)
   storage.setItem('logHistory', historyData)
 }
+
+console.log(storage)
+storage.setItem('xxx', {xxx:10000})
+
+console.log(storage.getItem('xxx'))

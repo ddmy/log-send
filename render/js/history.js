@@ -1,4 +1,5 @@
-const storage = require('electron-localstorage')
+const path = require('path')
+const storage = require(path.join(__dirname, 'utils/storage.js'))
 
 window.addEventListener('load', () => {
   const historyData = storage.getItem('logHistory') || []
