@@ -10,11 +10,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const pwd = document.querySelector('#pwd')
   const toEmail = document.querySelector('#toEmail')
   let userInfo = storage.getItem('author') || null
-  console.log('userInfo', userInfo)
   if (userInfo) {
     email.value = userInfo.email
     pwd.value = userInfo.pwd
     toEmail.value = userInfo.toEmail
+  } else {
+    email.disabled = false
+    pwd.disabled = false
   }
 
   document.querySelector('button').addEventListener('click', () => {
