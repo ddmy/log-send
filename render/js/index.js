@@ -102,8 +102,3 @@ function saveLogHistory (data) {
   historyData.unshift(data)
   storage.setItem('logHistory', historyData)
 }
-
-console.log(storage)
-storage.setItem('xxx', {xxx:10000})
-
-console.log(storage.getItem('xxx'))
