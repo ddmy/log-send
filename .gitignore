@@ -4,3 +4,4 @@ app
 .DS_Store
 dist
 package-lock.json
+localConfig.json
