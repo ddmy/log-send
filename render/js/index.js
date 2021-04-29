@@ -1,16 +1,40 @@
 const path = require('path')
 const nodemailer = require('nodemailer')
 const storage = require(path.join(__dirname, 'utils/storage.js'))
-const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
+const { checkNeddLogSend, checkedIsWorkday } = require(path.join(__dirname, 'render/common/common.js'))
 
 function isSend () {
-  document.querySelector('body').innerHTML = `
-    <h1>今日日报已提交，感谢配合！</h1>
-    <button style="display:block; margin: 20px auto">再次提交</button>
+  const html = `
+    <div style="width: 100vw; height: 100vh; position:fixed; top: 0; left: 0; background-color: #fff;">
+      <h1>今日日报已提交，感谢配合！</h1>
+      <button id="hiddeBtn" style="display:block; margin: 20px auto">再次提交</button>
+    </div>
   `
+  const div = document.createElement('div')
+  div.id = 'noWork'
+  div.innerHTML = html
+  document.querySelector('body').append(div)
   setTimeout(() => {
-    document.querySelector('button').addEventListener('click', () => {
-      location.reload()
+    document.querySelector('#hiddeBtn').addEventListener('click', () => {
+      document.querySelector('#noWork').style.display = 'none'
+    })
+  }, 0)
+}
+
+function noWorkDay () {
+  const html = `
+    <div style="width: 100vw; height: 100vh; position:fixed; top: 0; left: 0; background-color: #fff;">
+      <h1>今天休息，您辛苦了！</h1>
+      <button id="hiddeBtn" style="display:block; margin: 20px auto">加班提交日报</button>  
+    </div>
+  `
+  const div = document.createElement('div')
+  div.id = 'noWork'
+  div.innerHTML = html
+  document.querySelector('body').append(div)
+  setTimeout(() => {
+    document.querySelector('#hiddeBtn').addEventListener('click', () => {
+      document.querySelector('#noWork').style.display = 'none'
     })
   }, 0)
 }
@@ -53,7 +77,15 @@ submit && submit.addEventListener('click', () => {
 
 window.addEventListener('load', async () => {
   document.querySelector('body').style.opacity = '1'
-  !await checkNeddLogSend() && isSend()
+  const name = storage.getItem('logSendName') || null
+  if (name) {
+    document.querySelector('#name').value = name
+  }
+  if (!await checkedIsWorkday()) {
+    noWorkDay()
+  } else {
+    !await checkNeddLogSend() && isSend()
+  }
 })
 
 function sendEmail (userInfo, innerHtml = '', originData) {
@@ -101,4 +133,5 @@ function saveLogHistory (data) {
   const historyData = storage.getItem('logHistory') || []
   historyData.unshift(data)
   storage.setItem('logHistory', historyData)
+  storage.setItem('logSendName', data.name)
 }

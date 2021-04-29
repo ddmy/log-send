@@ -34,9 +34,8 @@ async function checkedIsWorkday () {
   }
   return false
 }
-
 // 检查是否需要弹框收集日志
-module.exports =  async function checkNeddLogSend () {
+async function checkNeddLogSend () {
   const isWorkDayResult = await checkedIsWorkday()
   if (!isWorkDayResult) return false
   let current = new Date().toLocaleDateString()
@@ -52,4 +51,10 @@ module.exports =  async function checkNeddLogSend () {
   } else if (localCacheDate.time === current && localCacheDate.result === 'yes') {
     return false
   }
+}  
+
+module.exports =  {
+  checkedIsWorkday,
+  // 检查是否需要弹框收集日志
+  checkNeddLogSend 
 }

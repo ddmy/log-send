@@ -1,7 +1,7 @@
 const { app, BrowserWindow, Tray, Menu, dialog, Notification } = require('electron')
 const AutoLaunch = require('auto-launch')
 const path = require('path')
-const checkNeddLogSend = require(path.join(__dirname, 'render/common/common.js'))
+const { checkNeddLogSend } = require(path.join(__dirname, 'render/common/common.js'))
 const { computedHoursStart } = require(path.join(__dirname, 'utils/utils.js'))
 const reloadApp = require(path.join(__dirname, 'main/job/reload.js'))
 
@@ -187,7 +187,7 @@ async function createTray () {
   })
 }
 
-if (process.platform === 'darwin') {
+if (process.platform === 'darwin' && app.isPackaged) {
   app.dock.hide()
 }
 
