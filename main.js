@@ -70,6 +70,8 @@ function loopSendLog () {
       clearTimeout(jobTimer)
       jobTimer = null
       timer = null
+      // 设置任务计划 下午六点开始执行循环提醒用户发日志
+      jobTimer = computedHoursStart({ hours: 18 }, loopSendLog)
     }
   }, 30000)
 }

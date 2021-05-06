@@ -1,6 +1,6 @@
 {
   "name": "log-send",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "日报收集器",
   "main": "main.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "logSend",
     "electron"
   ],
-  "author": "ChenDongdong",
+  "author": "Yijio",
   "license": "ISC",
   "dependencies": {
     "auto-launch": "^5.0.5",
