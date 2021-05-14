@@ -1,5 +1,7 @@
 const path = require('path')
 const nodemailer = require('nodemailer')
+const qs = require('qs')
+const axios = require('axios')
 const storage = require(path.join(__dirname, 'utils/storage.js'))
 const { checkNeddLogSend, checkedIsWorkday } = require(path.join(__dirname, 'render/common/common.js'))
 
@@ -72,7 +74,8 @@ submit && submit.addEventListener('click', () => {
     tomorrow,
     result
   }
-  sendEmail(userInfo, innerHtml, originData)
+  sendApi(innerHtml)
+  // sendEmail(userInfo, innerHtml, originData)
 })
 
 window.addEventListener('load', async () => {
@@ -126,6 +129,19 @@ function sendEmail (userInfo, innerHtml = '', originData) {
     isSend()
     alert('日报提交成功!')
     // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
+  })
+}
+
+function sendApi ( innerHtml = '') {
+  const data =  {
+    name: document.querySelector('#name').value,
+    date: new Date().toLocaleDateString().split('/').map(item => item.padStart(2, '0')).join('-'),
+    content: innerHtml
+  }
+  axios.post('http://ribao.bjroller.com/', qs.stringify(data) , {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   })
 }
 

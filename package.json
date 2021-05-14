@@ -22,7 +22,8 @@
     "auto-launch": "^5.0.5",
     "axios": "^0.21.1",
     "electron-localstorage": "^1.0.5",
-    "nodemailer": "^6.5.0"
+    "nodemailer": "^6.5.0",
+    "qs": "^6.10.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
