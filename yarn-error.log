@@ -1,0 +1,63 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn install
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  16.13.1
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/electron-localstorage: tunneling socket could not be established, cause=connect ECONNREFUSED 127.0.0.1:58591
+      at ClientRequest.onError (/usr/local/lib/node_modules/yarn/lib/cli.js:152235:17)
+      at Object.onceWrapper (node:events:510:26)
+      at ClientRequest.emit (node:events:390:28)
+      at Socket.socketErrorListener (node:_http_client:447:9)
+      at Socket.emit (node:events:390:28)
+      at emitErrorNT (node:internal/streams/destroy:157:8)
+      at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "log-send",
+    "version": "0.1.6",
+    "description": "日报收集器",
+    "main": "main.js",
+    "scripts": {
+      "start": "cross-env NODE_ENV=production electron .",
+      "build": "npm run remove:pack && npm version patch && npm run build:win && npm run build:mac",
+      "remove:pack": "rm -rf logSend*",
+      "build:win": "electron-packager . logSend --platform=win32 --arch=x64 --icon=./img/logo/icon.ico --out logSendWin --electron-version 12.0.4 --asar --overwrite  --ignore='logSendWin*|localConfig-dev.json'",
+      "build:mac": "electron-packager . logSend --platform=darwin --arch=x64 --icon=./img/logo/icon.icns --out logSendMac --electron-version 12.0.4 --asar --overwrite --ignore='logSendWin*|localConfig-dev.json'"
+    },
+    "keywords": [
+      "log",
+      "log-send",
+      "logSend",
+      "electron"
+    ],
+    "author": "Yijio",
+    "license": "ISC",
+    "dependencies": {
+      "auto-launch": "^5.0.5",
+      "axios": "^0.21.1",
+      "electron-localstorage": "^1.0.5",
+      "nodemailer": "^6.5.0"
+    },
+    "devDependencies": {
+      "cross-env": "^7.0.3"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

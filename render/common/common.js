@@ -14,7 +14,7 @@ async function checkedIsWorkday () {
   const date = Number(year + month + day)
   const monthDate = Number(year + month)
   // 查看缓存中是否有保存最新工作日信息
-  let workDay = storage.getItem('workday')
+  let workDay = storage.getItem('workDay')
   if (workDay && monthDate === workDay.name) {
     return !workDay.data.find(item => item.date === date)
   }
@@ -25,7 +25,9 @@ async function checkedIsWorkday () {
       message: '获取工作日信息出错，请稍后再试!'
     })
   })
-  if (result && result.status === 200 && result.data && result.data.code === '0') {
+  console.log('接口获取工作日信息:', result)
+  if (result && result.status === 200 && result.data && Number(result.data.code) === 0) {
+    console.log('处理最新工作日信息')
     storage.setItem('workDay', {
       name: monthDate,
       data: result.data.data.list
